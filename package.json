@@ -1,0 +1,52 @@
+{
+  "name": "whatsapp-bulk-api",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --hot src/server.ts",
+    "worker": "bun run --hot src/worker.ts",
+    "dev:full": "concurrently \"bun run dev\" \"bun run worker\"",
+    "build": "bun build src/server.ts --outdir dist && bun build src/worker.ts --outdir dist",
+    "start": "bun run dist/server.js",
+    "start:worker": "bun run dist/worker.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "bun run prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/uuid": "^10.0.0",
+    "bun-types": "^1.2.18"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "helmet": "^8.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.1",
+    "prisma": "^6.11.1",
+    "qrcode": "^1.5.4",
+    "redis": "^5.5.6",
+    "uuid": "^11.1.0",
+    "whatsapp-web.js": "^1.31.0"
+  }
+}

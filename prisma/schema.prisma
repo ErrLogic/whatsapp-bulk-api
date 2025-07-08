@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  name      String    @db.VarChar(100)
+  email     String    @unique @db.VarChar(100)
+  phone     String    @unique @db.VarChar(20)
+  password  String    @db.VarChar(255)
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  clients   Client[]
+  contacts  Contact[]
+  processes Process[]
+
+  @@map("users")
+}
+
+model Client {
+  id                      String    @id @default(uuid()) @db.VarChar(36)
+  userId                  String    @map("user_id") @db.VarChar(36)
+  clientPhone             String    @map("client_phone") @db.VarChar(20)
+  clientName              String?   @map("client_name") @db.VarChar(100)
+  clientPath              String    @map("client_path") @db.VarChar(255)
+  clientQrPath            String?   @map("client_qr_path") @db.VarChar(255)
+  isQrScanned             Boolean   @default(false) @map("is_qr_scanned")
+  isWhatsappAuthenticated Boolean   @default(false) @map("is_whatsapp_authenticated")
+  isWhatsappReady         Boolean   @default(false) @map("is_whatsapp_ready")
+  sessionData             String?   @map("session_data") @db.LongText
+  lastSeen                DateTime? @map("last_seen")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  processes               Process[]
+
+  @@unique([userId, clientPhone])
+  @@map("clients")
+}
+
+model Contact {
+  id          String    @id @default(uuid()) @db.VarChar(36)
+  userId      String    @map("user_id") @db.VarChar(36)
+  contactName String    @map("contact_name") @db.VarChar(100)
+  phone       String    @db.VarChar(20)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages    Message[]
+
+  @@index([userId], map: "contacts_user_id_fkey")
+  @@map("contacts")
+}
+
+model Process {
+  id           String    @id @default(uuid()) @db.VarChar(36)
+  userId       String    @map("user_id") @db.VarChar(36)
+  clientId     String    @map("client_id") @db.VarChar(36)
+  sentCount    Int       @default(0) @map("sent_count")
+  totalContact Int       @map("total_contact")
+  status       String    @default("pending") @db.VarChar(20)
+  messageText  String    @map("message_text") @db.Text
+  mediaPath    String?   @map("media_path") @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  messages     Message[]
+  client       Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId], map: "processes_client_id_fkey")
+  @@index([userId], map: "processes_user_id_fkey")
+  @@map("processes")
+}
+
+model Message {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  processId String    @map("process_id") @db.VarChar(36)
+  contactId String    @map("contact_id") @db.VarChar(36)
+  message   String    @db.Text
+  mediaPath String?   @map("media_path") @db.VarChar(255)
+  status    String    @default("pending") @db.VarChar(20)
+  sentAt    DateTime? @map("sent_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  contact   Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  process   Process   @relation(fields: [processId], references: [id], onDelete: Cascade)
+
+  @@index([contactId], map: "messages_contact_id_fkey")
+  @@index([processId], map: "messages_process_id_fkey")
+  @@map("messages")
+}
