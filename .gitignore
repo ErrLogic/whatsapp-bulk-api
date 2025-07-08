@@ -36,3 +36,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Whatsapp session and cache
 .wwebjs_cache
 whatsapp-sessions
+
+# Upload folder
+uploads
