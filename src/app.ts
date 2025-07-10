@@ -30,10 +30,22 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api', routes);
 
 // Health check
-app.get('/health', (_req, res) => {
+app.get('/', (_req, res) => {
     const response: ApiResponse = {
         success: true,
         message: 'Server is running',
+        data: {
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+        },
+    };
+    res.json(response);
+});
+
+app.get('/health', (_req, res) => {
+    const response: ApiResponse = {
+        success: true,
+        message: 'Server is health',
         data: {
             timestamp: new Date().toISOString(),
             uptime: process.uptime(),
